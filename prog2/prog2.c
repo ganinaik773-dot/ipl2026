@@ -1,0 +1,121 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define MAX 100
+ typedef struct{
+    int id;
+    char name[20];
+    float marks;
+ }student;
+
+ void writefile(const char *filename,student s[],int n){
+    FILE *fp=fopen("student.txt","w");
+
+    if(fp==NULL)
+    {
+        printf("not vakid");
+        return;
+    }
+    for(int i=0;i<n;i++)
+    {
+        fprintf(fp, "%d %s %f\n", s[i].id, s[i].name, s[i].marks);
+
+    }
+    fclose(fp);
+
+
+ }
+ int crindex(const char *filename,long pos[]){
+    FILE *fp=fopen("student.txt","r");
+    if(!fp){
+        printf("not valid");
+        return 0;
+    }
+
+    int count =0;
+
+    while(!feof(fp))
+    {
+        pos[count]=ftell(fp);
+        int id;
+        char name[20];
+        float marks;
+
+        if(fscanf(fp,"%d %s %f",&id,name,&marks)!=3)
+        {
+            break;
+        }
+        count++;
+
+    }
+    fclose(fp);
+    return count;
+
+ }
+ void displayRecord(const char *filename,long pos){
+    FILE *fp = fopen("student.txt", "r");
+    if (!fp) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    fseek(fp, pos, SEEK_SET);
+
+    int id;
+    char name[50];
+    float marks;
+
+    if (fscanf(fp, "%d %s %f", &id, name, &marks) == 3) {
+        printf("Record:\n");
+        printf("ID: %d\nName: %s\nMarks: %.2f\n", id, name, marks);
+    } else {
+        printf("Invalid position!\n");
+    }
+
+    fclose(fp);
+
+ }
+
+
+
+
+
+int main()
+{
+    student s[MAX];
+    long pos[MAX];
+    int n;
+
+    printf("enter the no of record \n");
+    scanf("%d",&n);
+
+    for(int i=0;i<n;i++)
+    {
+        printf("\nEnter details for student %d:\n", i + 1);
+        printf("ID: ");
+        scanf("%d", &s[i].id);
+        printf("Name: ");
+        scanf("%s", s[i].name);
+        printf("Marks: ");
+        scanf("%f", &s[i].marks);
+    }
+
+    writefile("student.txt",s,n);
+
+    int total=crindex("student.txt",pos);
+
+     printf("\nStored %d record positions.\n", total);
+
+      int choice;
+    printf("\nEnter record number to display (1 to %d): ", total);
+    scanf("%d", &choice);
+
+    if (choice >= 1 && choice <= total) {
+        displayRecord("student.txt", pos[choice - 1]);
+    } else {
+        printf("Invalid choice!\n");
+    }
+    return 0;
+
+
+}
